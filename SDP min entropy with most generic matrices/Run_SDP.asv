@@ -1,0 +1,31 @@
+% This function performs an SDP optimization
+
+%% Define dimensions of our system and settings
+d = 2;
+m = 3;
+settings = [];
+for x=1:1:m
+    settings = [settings,(x-0.5)/m];
+end
+settings = [settings,(1-0.5)/m];
+for y=1:1:m
+    settings = [settings,(y)/m];
+end
+
+% Define the initial state
+gammas = [1,1];
+state = [];
+
+%% Compute min entropy
+%etalist = linspace(sqrt(0.85),1.,50);
+etalist = [1]
+h = waitbar(0,'Processing...');
+old_entropy = [];
+old_rate = [];
+for i=1:length(etalist)
+    waitbar(i/length(etalist),h,sprintf('Processing eta = %d...',etalist(i)));
+    [ent,Gammasubs,cons,Pjoint,PAlice,PBob] = compute_entropy(d,m,etalist(i),settings,gammas,state);
+    old_entropy = [old_entropy,ent];
+    old_rate = [old_rate,compute_rate(d,m,ent,etalist(i),settings,gammas,state)];
+end
+close(h)
